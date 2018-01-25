@@ -37,7 +37,6 @@ class LazyJSON(object):
                 raise AttributeError("{} is not a valid attribute.".format(key))
             else:
                 print("Hitting network")
-                print(self.kwargs)
                 response = self._requester.request(self.method, **self.kwargs)
                 self.loaded = True
                 self.attributes.update(response.json())
