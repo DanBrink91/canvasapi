@@ -1211,6 +1211,7 @@ class Course(CanvasObject):
             'GET',
             'courses/{}/students/submissions'.format(self.id),
             {'course_id': self.id},
+            attrs={'id':self.id},
             _kwargs=combine_kwargs(**kwargs)
         )
 
@@ -1750,8 +1751,8 @@ class Course(CanvasObject):
         """
         Get a single grading standard from the course.
 
-        :calls: `GET /api/v1/courses/:course_id/grading_standards/:grading_standard_id \
-        <https://canvas.instructure.com/doc/api/grading_standards.html#method.grading_standards_api.context_show>`_
+        :calls `/api/v1/courses/:course_id/grading_standards/:grading_standard_id \
+        <https://canvas.instructure.com/doc/api/grading_standards.html#method.grading_standards_api.context_show>`
 
         :param grading_standard_id: The grading standard id
         :type grading_standard_id: int

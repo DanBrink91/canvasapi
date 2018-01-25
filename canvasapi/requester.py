@@ -8,6 +8,7 @@ from canvasapi.exceptions import (
     ResourceDoesNotExist, Unauthorized
 )
 
+from canvasapi.util import LazyResponse
 
 class Requester(object):
     """
@@ -27,7 +28,7 @@ class Requester(object):
         self._cache = []
 
     def request(
-            self, method, endpoint=None, headers=None, use_auth=True,
+            self, method, endpoint=None, attrs={}, headers=None, use_auth=True,
             _url=None, _kwargs=None, **kwargs):
         """
         Make a request to the Canvas API and return the response.
@@ -51,6 +52,8 @@ class Requester(object):
         :type _kwargs: `list`
         :rtype: str
         """
+        if attrs:
+            endpoint = endpoint.format(*attrs.values())
         full_url = _url if _url else "{}{}".format(self.base_url, endpoint)
 
         if not headers:
@@ -68,6 +71,9 @@ class Requester(object):
         for i, kwarg in enumerate(_kwargs):
             kw, arg = kwarg
 
+            if kw == 'lazy':
+                if arg:
+                    return LazyResponse(self, attrs, method, _url=full_url, headers=headers, use_auth=use_auth, _kwargs=_kwargs, **kwargs)
             # Convert any datetime objects into ISO 8601 formatted strings.
             if isinstance(arg, datetime):
                 _kwargs[i] = (kw, arg.isoformat())

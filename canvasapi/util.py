@@ -4,6 +4,45 @@ from collections import Iterable
 from six import binary_type, string_types, text_type
 
 
+class LazyResponse(object):
+
+    def __init__(self, _requester, attributes, method, *args, **kwargs):
+        self.lazy_json = LazyJSON(_requester, attributes, method, **kwargs)
+
+    def json(self):
+        return self.lazy_json
+
+class LazyJSON(object):
+
+    def __init__(self, _requester, attributes, method, *args, **kwargs):
+        try:
+            del kwargs['_kwargs']
+        except:
+            pass
+        self._requester = _requester        
+        self.attributes = attributes
+        self.method = method
+        self.args = args
+        self.kwargs = kwargs
+        self.loaded = False
+    
+    def items(self):
+        return self.attributes.items()
+    
+    def __getattr__(self, key):
+        if key in self.attributes:
+            return self.attributes[key]
+        else:
+            if self.loaded:
+                raise AttributeError("{} is not a valid attribute.".format(key))
+            else:
+                print("Hitting network")
+                print(self.kwargs)
+                response = self._requester.request(self.method, **self.kwargs)
+                self.loaded = True
+                self.attributes.update(response.json())
+                return getattr(self, key)
+
 def is_multivalued(value):
     """
     Determine whether the given value should be treated as a sequence

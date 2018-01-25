@@ -32,6 +32,9 @@ class CanvasObject(object):
         attrs = ', '.join(['{}={}'.format(attr, val) for attr, val in self.__dict__.items() if attr != 'attributes'])  # noqa
         return '{}({})'.format(classname, attrs)
 
+    def __getattr__(self, key):
+        return  getattr(self.attributes, key)
+    
     def to_json(self):
         """
         Return the original JSON response from the API that was used to

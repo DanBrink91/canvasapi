@@ -155,7 +155,8 @@ class Canvas(object):
 
         response = self.__requester.request(
             'GET',
-            uri_str.format(course_id),
+            uri_str,
+            attrs={'id': course_id },
             _kwargs=combine_kwargs(**kwargs)
         )
         return Course(self.__requester, response.json())
