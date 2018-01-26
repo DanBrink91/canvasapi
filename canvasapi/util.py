@@ -12,6 +12,11 @@ class LazyResponse(object):
     def json(self):
         return self.lazy_json
 
+    @property
+    def links(self):
+        self.lazy_json.load()
+        return self.lazy_json.response.links
+
 class LazyJSON(object):
 
     def __init__(self, _requester, attributes, method, *args, **kwargs):
@@ -25,9 +30,7 @@ class LazyJSON(object):
         self.args = args
         self.kwargs = kwargs
         self.loaded = False
-    
-    def items(self):
-        return self.attributes.items()
+        self.response = None
     
     def __getattr__(self, key):
         if key in self.attributes:
@@ -36,11 +39,28 @@ class LazyJSON(object):
             if self.loaded:
                 raise AttributeError("{} is not a valid attribute.".format(key))
             else:
-                print("Hitting network")
-                response = self._requester.request(self.method, **self.kwargs)
-                self.loaded = True
-                self.attributes.update(response.json())
+                self.load()
                 return getattr(self, key)
+    
+    def __iter__(self):
+        self.load()
+        return iter(self.attributes)
+
+    def items(self):
+        return self.attributes.items()
+
+    def load(self):
+        if self.loaded:
+            return
+        print("Lazy object has been loaded")
+        self.response = self._requester.request(self.method, **self.kwargs)
+        self.loaded = True
+        json = self.response.json()
+
+        if isinstance(json, list):
+            self.attributes = json
+        else:
+            self.attributes.update(json)
 
 def is_multivalued(value):
     """

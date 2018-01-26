@@ -28,7 +28,7 @@ class Requester(object):
         self._cache = []
 
     def request(
-            self, method, endpoint=None, attrs={}, headers=None, use_auth=True,
+            self, method, endpoint=None, attrs=None, headers=None, use_auth=True,
             _url=None, _kwargs=None, **kwargs):
         """
         Make a request to the Canvas API and return the response.
@@ -54,6 +54,8 @@ class Requester(object):
         """
         if attrs:
             endpoint = endpoint.format(*attrs.values())
+        else:
+            attrs = {}
         full_url = _url if _url else "{}{}".format(self.base_url, endpoint)
 
         if not headers:
