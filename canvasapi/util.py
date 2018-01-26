@@ -22,6 +22,7 @@ class LazyJSON(object):
     def __init__(self, _requester, attributes, method, *args, **kwargs):
         try:
             del kwargs['_kwargs']
+            del kwargs['lazy']
         except:
             pass
         self._requester = _requester        
@@ -31,6 +32,10 @@ class LazyJSON(object):
         self.kwargs = kwargs
         self.loaded = False
         self.response = None
+    
+    def __str__(self):
+        self.load()
+        return str(self.attributes)
     
     def __getattr__(self, key):
         if key in self.attributes:
@@ -46,6 +51,7 @@ class LazyJSON(object):
         self.load()
         return iter(self.attributes)
 
+    # This actually only returns already loaded attributes, it doesn't cause the object to evaluate
     def items(self):
         return self.attributes.items()
 

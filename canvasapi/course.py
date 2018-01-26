@@ -194,7 +194,7 @@ class Course(CanvasObject):
         )
         return response.json().get('html', '')
 
-    def get_settings(self):
+    def get_settings(self, **kwargs):
         """
         Returns this course's settings.
 
@@ -205,7 +205,8 @@ class Course(CanvasObject):
         """
         response = self._requester.request(
             'GET',
-            'courses/{}/settings'.format(self.id)
+            'courses/{}/settings'.format(self.id),
+            **kwargs
         )
         return response.json()
 
