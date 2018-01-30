@@ -43,7 +43,7 @@ class User(CanvasObject):
             :class:`canvasapi.course.PageView`
         """
         from canvasapi.page_view import PageView
-
+        print(self.id)
         return PaginatedList(
             PageView,
             self._requester,

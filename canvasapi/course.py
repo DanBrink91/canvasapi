@@ -80,7 +80,7 @@ class Course(CanvasObject):
 
         return response.json().get('name')
 
-    def get_user(self, user, user_id_type=None):
+    def get_user(self, user, user_id_type=None, **kwargs):
         """
         Retrieve a user by their ID. `user_id_type` denotes which endpoint to try as there are
         several different ids that can pull the same user record from Canvas.
@@ -99,13 +99,16 @@ class Course(CanvasObject):
 
         if user_id_type:
             uri = 'courses/{}/users/{}:{}'.format(self.id, user_id_type, user)
+            user_id = user
         else:
             user_id = obj_or_id(user, "user", (User,))
             uri = 'courses/{}/users/{}'.format(self.id, user_id)
 
         response = self._requester.request(
             'GET',
-            uri
+            uri,
+            attrs={'id': user_id},
+            **kwargs
         )
         return User(self._requester, response.json())
 

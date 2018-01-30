@@ -47,6 +47,11 @@ class LazyJSON(object):
                 self.load()
                 return getattr(self, key)
     
+    # Overwriting __trunc__ method so we don't get a attribute lookup (and thus a potential network request) 
+    # when someone tries to convert a LazyJSON to a integer
+    def __trunc__(self):
+        raise TypeError("Cannot convert LazyJSON to int")
+
     def __iter__(self):
         self.load()
         return iter(self.attributes)
@@ -175,7 +180,7 @@ def obj_or_id(parameter, param_name, object_types):
     """
     try:
         return int(parameter)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, AttributeError):
         for obj_type in object_types:
             if isinstance(parameter, obj_type):
                 try:

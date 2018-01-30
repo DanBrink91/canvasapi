@@ -1102,6 +1102,32 @@ class TestCourse(unittest.TestCase):
         self.assertEqual(response.grading_scheme[0].get('name'), "A")
         self.assertEqual(response.grading_scheme[0].get('value'), 0.9)
 
+    def test_lazy_load(self, m):
+        register_uris({'course': ['get_user', 'get_users', 'get_users_p2']}, m)
+
+        user_by_id = self.course.get_user(1, lazy=True)
+        
+        self.assertFalse(user_by_id.loaded)
+        user_string = str(user_by_id)
+        self.assertTrue(user_by_id.loaded)
+
+        self.assertRaises(AttributeError, getattr, user_by_id, 'somerandomattributethatwillneverbeused')
+        
+        self.assertIsInstance(str(user_by_id.attributes), str)
+        
+        self.assertIsInstance(user_by_id, User)
+        self.assertTrue(hasattr(user_by_id, 'name'))
+
+        user_by_obj = self.course.get_user(user_by_id, lazy=True)
+        self.assertFalse(user_by_obj.loaded)
+        name = user_by_obj.name
+        self.assertTrue(user_by_obj.loaded)
+        self.assertIsInstance(user_by_obj, User)
+        self.assertTrue(hasattr(user_by_obj, 'name'))
+
+        # Paginated List Lazy Loading
+        users = self.course.get_users(lazy=True)
+        self.assertEqual(len(list(users)), 4)
 
 @requests_mock.Mocker()
 class TestCourseNickname(unittest.TestCase):
