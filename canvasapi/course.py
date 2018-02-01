@@ -375,7 +375,7 @@ class Course(CanvasObject):
             _kwargs=combine_kwargs(**kwargs)
         )
 
-    def get_quiz(self, quiz):
+    def get_quiz(self, quiz, **kwargs):
         """
         Return the quiz with the given id.
 
@@ -393,7 +393,9 @@ class Course(CanvasObject):
 
         response = self._requester.request(
             'GET',
-            'courses/{}/quizzes/{}'.format(self.id, quiz_id)
+            'courses/{}/quizzes/{}'.format(self.id, quiz_id),
+            attrs={ 'id': quiz_id },
+            **kwargs
         )
         quiz_json = response.json()
         quiz_json.update({'course_id': self.id})
@@ -468,6 +470,8 @@ class Course(CanvasObject):
         response = self._requester.request(
             'GET',
             'courses/{}/modules/{}'.format(self.id, module_id),
+            attrs={'id': module_id},
+            **kwargs
         )
         module_json = response.json()
         module_json.update({'course_id': self.id})
@@ -652,7 +656,7 @@ class Course(CanvasObject):
 
         return Page(self._requester, page_json)
 
-    def get_page(self, url):
+    def get_page(self, url, **kwargs):
         """
         Retrieve the contents of a wiki page.
 
@@ -667,7 +671,9 @@ class Course(CanvasObject):
 
         response = self._requester.request(
             'GET',
-            'courses/{}/pages/{}'.format(self.id, url)
+            'courses/{}/pages/{}'.format(self.id, url),
+            attrs={'url': url},
+            **kwargs
         )
         page_json = response.json()
         page_json.update({'course_id': self.id})
@@ -790,11 +796,12 @@ class Course(CanvasObject):
         response = self._requester.request(
             'GET',
             'courses/{}/files/{}'.format(self.id, file_id),
+            attrs={'id': file_id},
             _kwargs=combine_kwargs(**kwargs)
         )
         return File(self._requester, response.json())
 
-    def get_discussion_topic(self, topic):
+    def get_discussion_topic(self, topic, **kwargs):
         """
         Return data on an individual discussion topic.
 
@@ -810,7 +817,9 @@ class Course(CanvasObject):
 
         response = self._requester.request(
             'GET',
-            'courses/{}/discussion_topics/{}'.format(self.id, topic_id)
+            'courses/{}/discussion_topics/{}'.format(self.id, topic_id),
+            attrs={'id': topic_id},
+            **kwargs
         )
 
         response_json = response.json()
@@ -876,6 +885,7 @@ class Course(CanvasObject):
         response = self._requester.request(
             'GET',
             'courses/{}/assignment_groups/{}'.format(self.id, assignment_group_id),
+            attrs={'id': assignment_group_id},
             _kwargs=combine_kwargs(**kwargs)
         )
         response_json = response.json()
@@ -1451,7 +1461,7 @@ class Course(CanvasObject):
             _kwargs=combine_kwargs(**kwargs)
         )
 
-    def get_folder(self, folder):
+    def get_folder(self, folder, **kwargs):
         """
         Returns the details for a course folder
 
@@ -1467,7 +1477,9 @@ class Course(CanvasObject):
 
         response = self._requester.request(
             'GET',
-            'courses/{}/folders/{}'.format(self.id, folder_id)
+            'courses/{}/folders/{}'.format(self.id, folder_id),
+            attrs={'id': folder_id},
+            **kwargs
         )
         return Folder(self._requester, response.json())
 

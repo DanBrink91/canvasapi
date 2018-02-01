@@ -216,6 +216,10 @@ class TestCourse(unittest.TestCase):
 
     # get_quiz()
     def test_get_quiz(self, m):
+        lazy_quiz = self.course.get_quiz(1, lazy=True)
+        self.assertEqual(lazy_quiz.id, 1)
+        self.assertEqual(lazy_quiz.course_id, 1)
+        self.assertFalse(lazy_quiz.loaded)
         register_uris({'course': ['get_quiz']}, m)
 
         target_quiz_by_id = self.course.get_quiz(1)
@@ -262,6 +266,11 @@ class TestCourse(unittest.TestCase):
 
     # get_module()
     def test_get_module(self, m):
+        lazy_module = self.course.get_module(1, lazy=True)
+        self.assertEqual(lazy_module.id, 1)
+        self.assertEqual(lazy_module.course_id, 1)
+        self.assertFalse(lazy_module.loaded)
+       
         register_uris({'course': ['get_module_by_id']}, m)
 
         target_module_by_id = self.course.get_module(1)
@@ -374,9 +383,13 @@ class TestCourse(unittest.TestCase):
 
     # get_page()
     def test_get_page(self, m):
+        url = 'my-url'
+        lazy_page = self.course.get_page(url, lazy=True)
+        self.assertEqual(lazy_page.url, url)
+        self.assertEqual(lazy_page.course_id, 1)
+        self.assertFalse(lazy_page.loaded)
         register_uris({'course': ['get_page']}, m)
 
-        url = 'my-url'
         page = self.course.get_page(url)
 
         self.assertIsInstance(page, Page)
@@ -492,6 +505,9 @@ class TestCourse(unittest.TestCase):
 
     # get_file()
     def test_get_file(self, m):
+        lazy_file = self.course.get_file(1, lazy=True)
+        self.assertEqual(lazy_file.id, 1)
+        self.assertFalse(lazy_file.loaded)
         register_uris({'course': ['get_file']}, m)
 
         file_by_id = self.course.get_file(1)
@@ -902,6 +918,9 @@ class TestCourse(unittest.TestCase):
 
     # get_folder()
     def test_get_folder(self, m):
+        lazy_folder = self.course.get_folder(1, lazy=True)
+        self.assertEqual(lazy_folder.id, 1)
+        self.assertFalse(lazy_folder.loaded)
         register_uris({'course': ['get_folder']}, m)
 
         folder_by_id = self.course.get_folder(1)
@@ -1103,11 +1122,12 @@ class TestCourse(unittest.TestCase):
         self.assertEqual(response.grading_scheme[0].get('value'), 0.9)
 
     def test_lazy_load(self, m):
+        user_by_id = self.course.get_user(1, lazy=True)
+        self.assertEqual(user_by_id.id, 1)
+        self.assertFalse(user_by_id.loaded)
+
         register_uris({'course': ['get_user', 'get_users', 'get_users_p2']}, m)
 
-        user_by_id = self.course.get_user(1, lazy=True)
-        
-        self.assertFalse(user_by_id.loaded)
         user_string = str(user_by_id)
         self.assertTrue(user_by_id.loaded)
 

@@ -73,6 +73,9 @@ class LazyJSON(object):
         else:
             self.attributes.update(json)
 
+    def update(self, dict):
+        self.attributes.update(dict)
+
 def is_multivalued(value):
     """
     Determine whether the given value should be treated as a sequence
